@@ -33,6 +33,3 @@ These i a web application where we conncet "Education with A.I"
   - Responsive design and accessible modals for major actions. 
   - Progress tracking, notifications, and intuitive navigation. 
 
-Use this outline in the main README.md under the project's root directory to provide a quick, developer-friendly overview for GitHub visitors. Expand with installation, usage, and contribution sections as needed.
-
- (https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/83125093/d1e47361-d108-4c33-88c3-c1298ad56ab5/learning_platform4.html)
