@@ -1,0 +1,3032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Learning Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+    <style>
+        :root{
+            --bg-gradient: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
+            --surface: #b3d9ff; --panel:#e6f3ff; --card:#f0f8ff; --muted:#87ceeb; --text:#1e3a8a;
+            --brand:#3b82f6; --brand-2:#06b6d4; --accent:#22d3ee; --success:#22c55e; --warn:#f59e0b; --error:#ef4444;
+            --ring: rgba(59, 130, 246, 0.35);
+            --shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .auth-card {
+            background: linear-gradient(180deg, rgba(230,243,255,0.9), rgba(204,231,255,0.8));
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(59,130,246,0.15);
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow .3s ease;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(59,130,246,0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2.6rem;
+            background: linear-gradient(45deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .logo p {
+            color: #1e3a8a;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        input[type="email"], input[type="password"], input[type="text"], select, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            background: #e6f3ff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px var(--ring);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--brand), var(--brand-2));
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .dashboard {
+            display: none;
+            background: linear-gradient(180deg, rgba(230,243,255,0.25), rgba(204,231,255,0.35));
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #e6f3ff, #cce7ff);
+            color: var(--text);
+            padding: 30px 0;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 5px 0 30px rgba(59,130,246,0.3);
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 30px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            padding-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 15px 30px;
+            color: rgba(30, 58, 138, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: rgba(59,130,246,0.12);
+            color: #fff;
+            border-left-color: var(--accent);
+        }
+
+        .sidebar-nav i {
+            margin-right: 15px;
+            width: 20px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+        }
+
+        .header {
+            background: linear-gradient(180deg, rgba(230,243,255,0.9), rgba(204,231,255,0.8));
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--text);
+            font-size: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(240,248,255,0.95), rgba(230,243,255,0.85));
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(59,130,246,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--brand), var(--brand-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .course-item, .assignment-item, .student-item {
+            padding: 15px;
+            border: 1px solid #b3d9ff;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .course-item:hover, .assignment-item:hover, .student-item:hover {
+            background: #e6f3ff;
+        }
+
+        .course-title, .assignment-title {
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 5px;
+        }
+
+        .course-meta, .assignment-meta {
+            color: #1e3a8a;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e1e5e9;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            transition: width 0.3s ease;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-small {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .btn-outline-small {
+            background: transparent;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .role-option {
+            flex: 1;
+            padding: 20px;
+            border: 2px solid #b3d9ff;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .role-option:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .role-option.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(29, 78, 216, 0.1));
+        }
+
+        .role-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #3b82f6;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #1e3a8a;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #b3d9ff;
+            border-radius: 12px;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+        }
+
+        /* AI Tutor Widget */
+        .ai-tutor-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 3000;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        .ai-tutor-panel {
+            position: fixed;
+            bottom: 92px;
+            right: 24px;
+            width: 360px;
+            max-height: 70vh;
+            background: #f0f8ff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(59,130,246,0.2);
+            overflow: hidden;
+            z-index: 3000;
+            display: none;
+        }
+
+        .ai-tutor-panel.active { display: flex; flex-direction: column; }
+
+        .ai-tutor-header { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 12px 14px; background: linear-gradient(45deg, #3b82f6, #1d4ed8); color: #fff;
+        }
+        .ai-tutor-header h4 { font-size: 1rem; font-weight: 700; }
+        .ai-tutor-controls { display: flex; gap: 8px; align-items: center; }
+        .ai-tutor-controls select { 
+            border-radius: 8px; border: none; padding: 6px 8px; font-size: 0.85rem;
+        }
+        .ai-tutor-close { background: transparent; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+
+        .ai-tutor-messages { padding: 12px; overflow-y: auto; flex: 1; background: #f8fafc; }
+        .ai-msg { max-width: 80%; padding: 10px 12px; border-radius: 12px; margin: 6px 0; font-size: 0.95rem; line-height: 1.35; }
+        .ai-msg.bot { background: #eef2ff; color: #1e3a8a; align-self: flex-start; border-top-left-radius: 6px; }
+        .ai-msg.user { background: #e5e7eb; color: #111827; align-self: flex-end; border-top-right-radius: 6px; margin-left: auto; }
+
+        .ai-tutor-input { display: flex; gap: 8px; padding: 10px; background: #fff; border-top: 1px solid #eef2ff; }
+        .ai-tutor-input input { flex: 1; padding: 10px 12px; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 0.95rem; }
+        .ai-tutor-input button { padding: 10px 14px; border: none; border-radius: 10px; background: #3b82f6; color: #fff; font-weight: 600; cursor: pointer; }
+
+        /* Quiz Styles */
+        .quiz-section {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .quiz-progress {
+            margin-bottom: 20px;
+        }
+
+        .quiz-timer {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .quiz-timer.warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+
+        .quiz-timer.danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+        #question-text {
+            color: var(--text);
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+
+        .answer-option {
+            background: var(--card);
+            border: 2px solid var(--surface);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .answer-option:hover {
+            border-color: var(--brand);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .answer-option.selected {
+            border-color: var(--brand);
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .answer-option.correct {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .answer-option.incorrect {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        .score-display {
+            background: linear-gradient(45deg, var(--brand), var(--brand-2));
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .performance-analysis {
+            text-align: left;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .performance-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--surface);
+        }
+
+        .performance-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 480px) {
+            .ai-tutor-panel { right: 12px; left: 12px; width: auto; }
+            .quiz-timer { padding: 8px 16px; font-size: 0.9rem; }
+            #question-text { font-size: 1.1rem; }
+            .answer-option { padding: 12px 16px; }
+            .score-number { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login/Signup Page -->
+    <div id="auth-page" class="auth-container">
+        <div class="auth-card">
+            <div class="logo">
+                <h1>EduConnect</h1>
+                <p>Your Gateway to Learning</p>
+            </div>
+
+            <!-- Login Form -->
+            <div id="login-form">
+                <h2 style="text-align: center; margin-bottom: 30px; color: var(--text);">Welcome Back</h2>
+
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+
+                <button class="btn btn-primary" onclick="handleLogin()">Sign In</button>
+                <button class="btn btn-secondary" onclick="showSignup()">Create Account</button>
+            </div>
+
+            <!-- Signup Form -->
+            <div id="signup-form" class="hidden">
+                <h2 style="text-align: center; margin-bottom: 30px; color: var(--text);">Join EduConnect</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="signup-firstname">First Name</label>
+                        <input type="text" id="signup-firstname" placeholder="First name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-lastname">Last Name</label>
+                        <input type="text" id="signup-lastname" placeholder="Last name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Email Address</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Create a password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-role">Account Type</label>
+                    <select id="signup-role">
+                        <option value="student">Student</option>
+                        <option value="teacher">Teacher</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="student-fields">
+                    <label for="signup-grade">Academic Year</label>
+                    <select id="signup-grade">
+                        <option value="">Select Year</option>
+                        <option value="1st Year">1st Year</option>
+                        <option value="2nd Year">2nd Year</option>
+                        <option value="3rd Year">3rd Year</option>
+                        <option value="4th Year">4th Year</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="teacher-fields">
+                    <label for="signup-subject">Subject Area</label>
+                    <select id="signup-subject">
+                        <option value="">Select Subject</option>
+                        <option value="data-structures">Data Structures & Algorithms</option>
+                        <option value="computer-networks">Computer Networks</option>
+                        <option value="database-management">Database Management Systems</option>
+                        <option value="operating-systems">Operating Systems</option>
+                        <option value="software-engineering">Software Engineering</option>
+                        <option value="computer-architecture">Computer Architecture</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="handleSignup()">Create Account</button>
+                <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="student-dashboard" class="dashboard">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>EduConnect</h2>
+                <p>Student Portal</p>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="#" class="nav-link active" data-section="student-overview"><i data-lucide="home"></i>Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-section="student-courses"><i data-lucide="book-open"></i>My Courses</a></li>
+                <li><a href="#" class="nav-link" data-section="student-assignments"><i data-lucide="clipboard-list"></i>Assignments</a></li>
+                <li><a href="#" class="nav-link" data-section="student-grades"><i data-lucide="award"></i>Grades</a></li>
+                <li><a href="#" class="nav-link" data-section="student-schedule"><i data-lucide="calendar"></i>Schedule</a></li>
+                <li><a href="#" class="nav-link" data-section="student-messages"><i data-lucide="message-circle"></i>Messages</a></li>
+                <li><a href="#" class="nav-link" data-section="student-resources"><i data-lucide="folder"></i>Resources</a></li>
+                <li><a href="#" onclick="logout()"><i data-lucide="log-out"></i>Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Welcome back, <span id="student-name">Student</span>!</h1>
+                <div class="user-info">
+                    <div class="user-avatar">S</div>
+                    <span>Year <span id="student-grade">2nd Year</span></span>
+                </div>
+            </div>
+
+            <!-- Student Overview -->
+            <div id="student-overview" class="content-section">
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Active Courses</div>
+                        <div class="stat-number">6</div>
+                        <p>Currently enrolled courses</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Pending Assignments</div>
+                        <div class="stat-number">4</div>
+                        <p>Due this week</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Overall GPA</div>
+                        <div class="stat-number">3.8</div>
+                        <p>Current semester</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Attendance</div>
+                        <div class="stat-number">94%</div>
+                        <p>This month</p>
+                    </div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Recent Activities</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">DSA Quiz 5 - Completed</div>
+                            <div class="assignment-meta">Score: 85/100 • 2 hours ago</div>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">CN Assignment - Submitted</div>
+                            <div class="assignment-meta">Awaiting grade • 1 day ago</div>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">DBMS Lab Report - Due Soon</div>
+                            <div class="assignment-meta">Due: Tomorrow at 11:59 PM</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Upcoming Events</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Operating Systems Exam</div>
+                            <div class="assignment-meta">March 15, 2025 • 10:00 AM</div>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Software Engineering Lab</div>
+                            <div class="assignment-meta">March 12, 2025 • 2:00 PM</div>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">DSA Study Group</div>
+                            <div class="assignment-meta">March 10, 2025 • 4:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Courses -->
+            <div id="student-courses" class="content-section hidden">
+                <div class="card">
+                    <div class="card-title">My Courses</div>
+                    <div class="course-item">
+                        <div class="course-title">Data Structures & Algorithms</div>
+                        <div class="course-meta">Prof. Johnson • Lab 205 • 75% Complete</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-primary-small">View Materials</button>
+                            <button class="btn-small btn-outline-small">Join Class</button>
+                        </div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-title">Computer Networks</div>
+                        <div class="course-meta">Prof. Davis • Lab 102 • 60% Complete</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-primary-small">View Materials</button>
+                            <button class="btn-small btn-outline-small">Join Class</button>
+                        </div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-title">Database Management Systems</div>
+                        <div class="course-meta">Dr. Smith • Lab 301 • 85% Complete</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-primary-small">View Materials</button>
+                            <button class="btn-small btn-outline-small">Join Class</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Assignments -->
+            <div id="student-assignments" class="content-section hidden">
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Pending Assignments</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">DBMS Lab Report</div>
+                            <div class="assignment-meta">Due: Tomorrow at 11:59 PM</div>
+                            <span class="status-badge status-pending">Pending</span>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">DSA Problem Set 12</div>
+                            <div class="assignment-meta">Due: March 15, 2025</div>
+                            <span class="status-badge status-pending">Pending</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Completed Assignments</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">CN Assignment</div>
+                            <div class="assignment-meta">Submitted: March 8, 2025 • Grade: A-</div>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">DSA Quiz 5</div>
+                            <div class="assignment-meta">Completed: March 7, 2025 • Grade: B+</div>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Grades -->
+            <div id="student-grades" class="content-section hidden">
+                <div class="card">
+                    <div class="card-title">Grade Summary</div>
+                    <div class="course-item">
+                        <div class="course-title">Data Structures & Algorithms</div>
+                        <div class="course-meta">Current Grade: B+ (87%) • 12 assignments</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-title">Computer Networks</div>
+                        <div class="course-meta">Current Grade: A- (91%) • 8 assignments</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-title">Database Management Systems</div>
+                        <div class="course-meta">Current Grade: A (94%) • 10 assignments</div>
+                    </div>
+                    <div class="course-item">
+                        <div class="course-title">Operating Systems</div>
+                        <div class="course-meta">Current Grade: B (85%) • 9 assignments</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Schedule -->
+            <div id="student-schedule" class="content-section hidden">
+                <div class="card">
+                    <div class="card-title">Today's Schedule</div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">Period 1: Data Structures & Algorithms</div>
+                        <div class="assignment-meta">8:00 AM - 8:50 AM • Lab 205</div>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">Period 2: Computer Networks</div>
+                        <div class="assignment-meta">9:00 AM - 9:50 AM • Lab 102</div>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">Period 3: Database Management Systems</div>
+                        <div class="assignment-meta">10:00 AM - 10:50 AM • Lab 301</div>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">Lunch Break</div>
+                        <div class="assignment-meta">12:00 PM - 12:30 PM • Cafeteria</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Messages -->
+            <div id="student-messages" class="content-section hidden">
+                <div class="card">
+                    <div class="card-title">Recent Messages</div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">From: Prof. Johnson (DSA Teacher)</div>
+                        <div class="assignment-meta">"Great work on your recent quiz! Keep it up." • 2 hours ago</div>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">From: Prof. Davis (CN Teacher)</div>
+                        <div class="assignment-meta">"Your assignment shows good improvement. See me after class." • 1 day ago</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Resources -->
+            <div id="student-resources" class="content-section hidden">
+                <div class="card">
+                    <div class="card-title">Learning Resources</div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">📚 Digital Library</div>
+                        <div class="assignment-meta">Access thousands of books and research materials</div>
+                        <button class="btn-small btn-primary-small">Browse</button>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">🎥 Video Lectures</div>
+                        <div class="assignment-meta">Recorded lessons and tutorials from teachers</div>
+                        <button class="btn-small btn-primary-small">Watch</button>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">🧠 Lecture Summarizer</div>
+                        <div class="assignment-meta">Paste or upload a lecture to get a summary, key points, and a quick quiz</div>
+                        <button class="btn-small btn-primary-small" onclick="openModal('lecture-summarizer-modal')">Open</button>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">📝 Study Guides</div>
+                        <div class="assignment-meta">Comprehensive notes and exam preparation materials</div>
+                        <button class="btn-small btn-primary-small">Download</button>
+                    </div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">🧪 Virtual Labs</div>
+                        <div class="assignment-meta">Interactive science experiments and simulations</div>
+                        <button class="btn-small btn-primary-small">Launch</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teacher Dashboard -->
+    <div id="teacher-dashboard" class="dashboard">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>EduConnect</h2>
+                <p>Teacher Portal</p>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="#" class="nav-link active" data-section="teacher-overview"><i data-lucide="home"></i>Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-section="teacher-courses"><i data-lucide="book-open"></i>My Courses</a></li>
+                <li><a href="#" class="nav-link" data-section="teacher-students"><i data-lucide="users"></i>Students</a></li>
+                <li><a href="#" class="nav-link" data-section="teacher-assignments"><i data-lucide="clipboard-list"></i>Assignments</a></li>
+                <li><a href="#" class="nav-link" data-section="teacher-grades"><i data-lucide="award"></i>Gradebook</a></li>
+                <li><a href="#" class="nav-link" data-section="teacher-schedule"><i data-lucide="calendar"></i>Schedule</a></li>
+                <li><a href="#" class="nav-link" data-section="teacher-messages"><i data-lucide="message-circle"></i>Messages</a></li>
+                <li><a href="#" class="nav-link" data-section="teacher-resources"><i data-lucide="folder"></i>Resources</a></li>
+                <li><a href="#" onclick="logout()"><i data-lucide="log-out"></i>Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Welcome back, <span id="teacher-name">Teacher</span>!</h1>
+                <div class="user-info">
+                    <div class="user-avatar">T</div>
+                    <span id="teacher-subject">Data Structures & Algorithms</span>
+                    <button class="btn-small btn-primary-small" onclick="openModal('create-assignment-modal')">+ New Assignment</button>
+                </div>
+            </div>
+
+            <!-- Teacher Overview -->
+            <div id="teacher-overview" class="content-section">
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Total Students</div>
+                        <div class="stat-number">128</div>
+                        <p>Across all courses</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Active Courses</div>
+                        <div class="stat-number">5</div>
+                        <p>This semester</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Pending Grades</div>
+                        <div class="stat-number">23</div>
+                        <p>Need to be graded</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Class Average</div>
+                        <div class="stat-number">85%</div>
+                        <p>Overall performance</p>
+                    </div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Recent Submissions</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">DSA Quiz 5 - Sarah Johnson</div>
+                            <div class="assignment-meta">Submitted: 2 hours ago • Grade: Pending</div>
+                            <button class="btn-small btn-primary-small">Grade Now</button>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Algorithm Homework - Mike Chen</div>
+                            <div class="assignment-meta">Submitted: 4 hours ago • Grade: Pending</div>
+                            <button class="btn-small btn-primary-small">Grade Now</button>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Data Structure Project - Emma Wilson</div>
+                            <div class="assignment-meta">Submitted: 1 day ago • Grade: A-</div>
+                            <span class="status-badge status-completed">Graded</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Upcoming Classes</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Advanced DSA - Period 3</div>
+                            <div class="assignment-meta">Today • 10:00 AM - 10:50 AM • Lab 205</div>
+                            <button class="btn-small btn-outline-small">View Lesson Plan</button>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Basic Programming - Period 5</div>
+                            <div class="assignment-meta">Today • 1:00 PM - 1:50 PM • Lab 205</div>
+                            <button class="btn-small btn-outline-small">View Lesson Plan</button>
+                        </div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Algorithm Design - Period 7</div>
+                            <div class="assignment-meta">Today • 3:00 PM - 3:50 PM • Lab 205</div>
+                            <button class="btn-small btn-outline-small">View Lesson Plan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Courses -->
+            <div id="teacher-courses" class="content-section hidden">
+                <div class="header" style="background: none; padding: 0; margin-bottom: 20px; box-shadow: none;">
+                    <h2>My Courses</h2>
+                    <button class="btn-small btn-primary-small" onclick="openModal('create-course-modal')">+ Create New Course</button>
+                </div>
+                
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Advanced Data Structures</div>
+                        <div class="course-meta">32 students • Period 3 • Lab 205</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 68%"></div>
+                        </div>
+                        <p style="margin: 10px 0;">Course Progress: 68%</p>
+                        <div class="quick-actions">
+                            <button class="btn-small btn-primary-small">Manage</button>
+                            <button class="btn-small btn-outline-small">View Students</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Basic Programming</div>
+                        <div class="course-meta">28 students • Period 5 • Lab 205</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <p style="margin: 10px 0;">Course Progress: 75%</p>
+                        <div class="quick-actions">
+                            <button class="btn-small btn-primary-small">Manage</button>
+                            <button class="btn-small btn-outline-small">View Students</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Algorithm Design</div>
+                        <div class="course-meta">25 students • Period 7 • Lab 205</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%"></div>
+                        </div>
+                        <p style="margin: 10px 0;">Course Progress: 45%</p>
+                        <div class="quick-actions">
+                            <button class="btn-small btn-primary-small">Manage</button>
+                            <button class="btn-small btn-outline-small">View Students</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Students -->
+            <div id="teacher-students" class="content-section hidden">
+                <div class="header" style="background: none; padding: 0; margin-bottom: 20px; box-shadow: none;">
+                    <h2>Student Management</h2>
+                    <button class="btn-small btn-primary-small" onclick="openModal('add-student-modal')">+ Add Student</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">All Students (128)</div>
+                    <div class="student-item">
+                        <div class="course-title">Sarah Johnson</div>
+                        <div class="course-meta">2nd Year • Advanced Data Structures • Overall: A- (91%)</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-outline-small">View Profile</button>
+                            <button class="btn-small btn-outline-small">Send Message</button>
+                            <button class="btn-small btn-primary-small">View Grades</button>
+                        </div>
+                    </div>
+                    
+                    <div class="student-item">
+                        <div class="course-title">Mike Chen</div>
+                        <div class="course-meta">2nd Year • Basic Programming • Overall: B+ (87%)</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-outline-small">View Profile</button>
+                            <button class="btn-small btn-outline-small">Send Message</button>
+                            <button class="btn-small btn-primary-small">View Grades</button>
+                        </div>
+                    </div>
+                    
+                    <div class="student-item">
+                        <div class="course-title">Emma Wilson</div>
+                        <div class="course-meta">3rd Year • Algorithm Design • Overall: A (94%)</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-outline-small">View Profile</button>
+                            <button class="btn-small btn-outline-small">Send Message</button>
+                            <button class="btn-small btn-primary-small">View Grades</button>
+                        </div>
+                    </div>
+                    
+                    <div class="student-item">
+                        <div class="course-title">David Rodriguez</div>
+                        <div class="course-meta">2nd Year • Advanced Data Structures • Overall: B (85%)</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-outline-small">View Profile</button>
+                            <button class="btn-small btn-outline-small">Send Message</button>
+                            <button class="btn-small btn-primary-small">View Grades</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Assignments -->
+            <div id="teacher-assignments" class="content-section hidden">
+                <div class="header" style="background: none; padding: 0; margin-bottom: 20px; box-shadow: none;">
+                    <h2>Assignment Management</h2>
+                    <button class="btn-small btn-primary-small" onclick="openModal('create-assignment-modal')">+ Create Assignment</button>
+                </div>
+                
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">Active Assignments</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Binary Tree Algorithms Test</div>
+                            <div class="assignment-meta">Due: March 15, 2025 • 23 submissions pending</div>
+                            <div class="quick-actions" style="margin-top: 10px;">
+                                <button class="btn-small btn-primary-small">Grade All</button>
+                                <button class="btn-small btn-outline-small">Edit</button>
+                            </div>
+                        </div>
+                        
+                        <div class="assignment-item">
+                            <div class="assignment-title">Graph Algorithms Homework</div>
+                            <div class="assignment-meta">Due: March 12, 2025 • 15 submissions pending</div>
+                            <div class="quick-actions" style="margin-top: 10px;">
+                                <button class="btn-small btn-primary-small">Grade All</button>
+                                <button class="btn-small btn-outline-small">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-title">Recently Graded</div>
+                        <div class="assignment-item">
+                            <div class="assignment-title">Data Structure Project</div>
+                            <div class="assignment-meta">Graded: March 8, 2025 • Class Average: 88%</div>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                        
+                        <div class="assignment-item">
+                            <div class="assignment-title">Algorithm Quiz 4</div>
+                            <div class="assignment-meta">Graded: March 6, 2025 • Class Average: 82%</div>
+                            <span class="status-badge status-completed">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Grades -->
+            <div id="teacher-grades" class="content-section hidden">
+                <div class="card">
+                    <div class="card-title">Gradebook Overview</div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">Advanced Data Structures</div>
+                        <div class="assignment-meta">Class Average: 87% • 32 students • 15 assignments</div>
+                        <button class="btn-small btn-primary-small">Open Gradebook</button>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">Basic Programming</div>
+                        <div class="assignment-meta">Class Average: 85% • 28 students • 12 assignments</div>
+                        <button class="btn-small btn-primary-small">Open Gradebook</button>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">Algorithm Design</div>
+                        <div class="assignment-meta">Class Average: 89% • 25 students • 10 assignments</div>
+                        <button class="btn-small btn-primary-small">Open Gradebook</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Schedule -->
+            <div id="teacher-schedule" class="content-section hidden">
+                <div class="card">
+                    <div class="card-title">Today's Schedule</div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">Period 1: Prep Time</div>
+                        <div class="assignment-meta">8:00 AM - 8:50 AM • Room 205</div>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">Period 2: Basic Programming</div>
+                        <div class="assignment-meta">9:00 AM - 9:50 AM • Lab 205 • 28 students</div>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">Period 3: Advanced Data Structures</div>
+                        <div class="assignment-meta">10:00 AM - 10:50 AM • Lab 205 • 32 students</div>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">Lunch Break</div>
+                        <div class="assignment-meta">12:00 PM - 12:30 PM</div>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">Period 7: Algorithm Design</div>
+                        <div class="assignment-meta">3:00 PM - 3:50 PM • Lab 205 • 25 students</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Messages -->
+            <div id="teacher-messages" class="content-section hidden">
+                <div class="header" style="background: none; padding: 0; margin-bottom: 20px; box-shadow: none;">
+                    <h2>Messages</h2>
+                    <button class="btn-small btn-primary-small" onclick="openModal('compose-message-modal')">+ Compose Message</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">Recent Messages</div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">From: Sarah Johnson (Student)</div>
+                        <div class="assignment-meta">"Could you explain binary tree traversal again?" • 2 hours ago</div>
+                        <button class="btn-small btn-outline-small">Reply</button>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">From: Parent of Mike Chen</div>
+                        <div class="assignment-meta">"Thank you for the progress update." • 1 day ago</div>
+                        <button class="btn-small btn-outline-small">Reply</button>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">From: Principal Davis</div>
+                        <div class="assignment-meta">"Please submit your semester reports by Friday." • 2 days ago</div>
+                        <button class="btn-small btn-outline-small">Reply</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Resources -->
+            <div id="teacher-resources" class="content-section hidden">
+                <div class="header" style="background: none; padding: 0; margin-bottom: 20px; box-shadow: none;">
+                    <h2>Teaching Resources</h2>
+                    <button class="btn-small btn-primary-small" onclick="openModal('upload-resource-modal')">+ Upload Resource</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-title">My Resources</div>
+                    <div class="assignment-item">
+                        <div class="assignment-title">📊 Data Structures Lesson Plans</div>
+                        <div class="assignment-meta">15 lesson plans • Last updated: March 5, 2025</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-primary-small">View</button>
+                            <button class="btn-small btn-outline-small">Edit</button>
+                            <button class="btn-small btn-outline-small">Share</button>
+                        </div>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">📝 Assessment Templates</div>
+                        <div class="assignment-meta">8 templates • Last updated: March 3, 2025</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-primary-small">View</button>
+                            <button class="btn-small btn-outline-small">Edit</button>
+                            <button class="btn-small btn-outline-small">Share</button>
+                        </div>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">🎥 Video Lectures</div>
+                        <div class="assignment-meta">12 recorded lessons • Total views: 847</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-primary-small">View</button>
+                            <button class="btn-small btn-outline-small">Analytics</button>
+                            <button class="btn-small btn-outline-small">Share</button>
+                        </div>
+                    </div>
+                    
+                    <div class="assignment-item">
+                        <div class="assignment-title">📚 Digital Textbooks</div>
+                        <div class="assignment-meta">5 textbooks • Shared with 85 students</div>
+                        <div class="quick-actions" style="margin-top: 10px;">
+                            <button class="btn-small btn-primary-small">Manage</button>
+                            <button class="btn-small btn-outline-small">Add New</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Tutor Widget -->
+    <button id="ai-tutor-toggle" class="ai-tutor-toggle" title="AI Tutor">🤖</button>
+    <div id="ai-tutor-panel" class="ai-tutor-panel" aria-live="polite">
+        <div class="ai-tutor-header">
+            <h4>AI Tutor</h4>
+            <div class="ai-tutor-controls">
+                <select id="ai-difficulty" aria-label="Difficulty">
+                    <option value="auto" selected>Auto</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+                <button class="ai-tutor-close" id="ai-settings" title="Settings">⚙</button>
+                <button class="ai-tutor-close" id="ai-close" title="Close">×</button>
+            </div>
+        </div>
+        <div id="ai-messages" class="ai-tutor-messages"></div>
+        <div class="ai-tutor-input">
+            <input id="ai-input" type="text" placeholder="Ask a question about your coursework..." aria-label="Message AI Tutor"/>
+            <button id="ai-stt" title="Speak your doubt">🎤</button>
+            <button id="ai-tts" title="Read last reply">🔊</button>
+            <button id="ai-send">Send</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- AI Settings Modal: runtime key and proxy URL (no secrets persisted) -->
+    <div id="ai-settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>AI Settings (Local)</h3>
+                <button class="close-modal" onclick="closeModal('ai-settings-modal')">&times;</button>
+            </div>
+            <div class="assignment-item" style="margin-bottom:10px;">
+                <div class="assignment-title">Security Warning</div>
+                <div class="assignment-meta">Do not store long-lived API keys in the browser. Prefer a server-side proxy. Keys here are kept only in this tab (sessionStorage).</div>
+            </div>
+            <div class="form-group">
+                <label for="ai-proxy">Proxy Endpoint (recommended)</label>
+                <input type="text" id="ai-proxy" placeholder="http://localhost:4000/api/chat">
+            </div>
+            <div class="form-group">
+                <label for="ai-key">Temporary API Key (optional for direct OpenAI test)</label>
+                <input type="password" id="ai-key" placeholder="sk-... (session only)">
+            </div>
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="saveAiSettings()">Save</button>
+                <button class="btn btn-secondary" onclick="clearAiSettings()">Clear</button>
+                <button class="btn btn-primary" onclick="testAiConnection()">Test Connection</button>
+            </div>
+            <div id="ai-test-status" class="assignment-meta" style="margin-top:10px;">Status: Not tested</div>
+        </div>
+    </div>
+    <!-- Create Assignment Modal -->
+    <div id="create-assignment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Assignment</h3>
+                <button class="close-modal" onclick="closeModal('create-assignment-modal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignment-title">Assignment Title</label>
+                <input type="text" id="assignment-title" placeholder="Enter assignment title">
+            </div>
+            
+            <div class="form-group">
+                <label for="assignment-course">Course</label>
+                <select id="assignment-course">
+                    <option value="">Select Course</option>
+                    <option value="data-structures">Advanced Data Structures</option>
+                    <option value="basic-programming">Basic Programming</option>
+                    <option value="algorithm-design">Algorithm Design</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="assignment-due-date">Due Date</label>
+                    <input type="date" id="assignment-due-date">
+                </div>
+                <div class="form-group">
+                    <label for="assignment-due-time">Due Time</label>
+                    <input type="time" id="assignment-due-time">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="assignment-description">Description</label>
+                <textarea id="assignment-description" placeholder="Enter assignment description and instructions"></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="assignment-points">Total Points</label>
+                    <input type="number" id="assignment-points" placeholder="100">
+                </div>
+                <div class="form-group">
+                    <label for="assignment-type">Assignment Type</label>
+                    <select id="assignment-type">
+                        <option value="homework">Homework</option>
+                        <option value="quiz">Quiz</option>
+                        <option value="test">Test</option>
+                        <option value="project">Project</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="createAssignment()">Create Assignment</button>
+                <button class="btn btn-secondary" onclick="closeModal('create-assignment-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Course Modal -->
+    <div id="create-course-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Course</h3>
+                <button class="close-modal" onclick="closeModal('create-course-modal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="course-name">Course Name</label>
+                <input type="text" id="course-name" placeholder="Enter course name">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="course-code">Course Code</label>
+                    <input type="text" id="course-code" placeholder="e.g., MATH101">
+                </div>
+                <div class="form-group">
+                    <label for="course-period">Period</label>
+                    <select id="course-period">
+                        <option value="">Select Period</option>
+                        <option value="1">Period 1</option>
+                        <option value="2">Period 2</option>
+                        <option value="3">Period 3</option>
+                        <option value="4">Period 4</option>
+                        <option value="5">Period 5</option>
+                        <option value="6">Period 6</option>
+                        <option value="7">Period 7</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="course-room">Room Number</label>
+                <input type="text" id="course-room" placeholder="e.g., 205">
+            </div>
+            
+            <div class="form-group">
+                <label for="course-description">Course Description</label>
+                <textarea id="course-description" placeholder="Enter course description and objectives"></textarea>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="createCourse()">Create Course</button>
+                <button class="btn btn-secondary" onclick="closeModal('create-course-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="add-student-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Student to Course</h3>
+                <button class="close-modal" onclick="closeModal('add-student-modal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="student-email">Student Email</label>
+                <input type="email" id="student-email" placeholder="Enter student email">
+            </div>
+            
+            <div class="form-group">
+                <label for="student-course-select">Course</label>
+                <select id="student-course-select">
+                    <option value="">Select Course</option>
+                    <option value="data-structures">Advanced Data Structures</option>
+                    <option value="basic-programming">Basic Programming</option>
+                    <option value="algorithm-design">Algorithm Design</option>
+                </select>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="addStudent()">Add Student</button>
+                <button class="btn btn-secondary" onclick="closeModal('add-student-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compose Message Modal -->
+    <div id="compose-message-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Compose Message</h3>
+                <button class="close-modal" onclick="closeModal('compose-message-modal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="message-to">To</label>
+                <input type="text" id="message-to" placeholder="Enter recipient name or email">
+            </div>
+            
+            <div class="form-group">
+                <label for="message-subject">Subject</label>
+                <input type="text" id="message-subject" placeholder="Enter message subject">
+            </div>
+            
+            <div class="form-group">
+                <label for="message-body">Message</label>
+                <textarea id="message-body" placeholder="Type your message here"></textarea>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="sendMessage()">Send Message</button>
+                <button class="btn btn-secondary" onclick="closeModal('compose-message-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Resource Modal -->
+    <div id="upload-resource-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Resource</h3>
+                <button class="close-modal" onclick="closeModal('upload-resource-modal')">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label for="resource-title">Resource Title</label>
+                <input type="text" id="resource-title" placeholder="Enter resource title">
+            </div>
+            
+            <div class="form-group">
+                <label for="resource-type">Resource Type</label>
+                <select id="resource-type">
+                    <option value="">Select Type</option>
+                    <option value="lesson-plan">Lesson Plan</option>
+                    <option value="worksheet">Worksheet</option>
+                    <option value="presentation">Presentation</option>
+                    <option value="video">Video</option>
+                    <option value="document">Document</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="resource-course">Associated Course</label>
+                <select id="resource-course">
+                    <option value="">Select Course (Optional)</option>
+                    <option value="data-structures">Advanced Data Structures</option>
+                    <option value="basic-programming">Basic Programming</option>
+                    <option value="algorithm-design">Algorithm Design</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="resource-file">Upload File</label>
+                <input type="file" id="resource-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4,.avi">
+            </div>
+            
+            <div class="form-group">
+                <label for="resource-description">Description</label>
+                <textarea id="resource-description" placeholder="Enter resource description"></textarea>
+            </div>
+            
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="uploadResource()">Upload Resource</button>
+                <button class="btn btn-secondary" onclick="closeModal('upload-resource-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lecture Summarizer Modal -->
+    <div id="lecture-summarizer-modal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>Lecture Summarizer</h3>
+                <button class="close-modal" onclick="closeModal('lecture-summarizer-modal')">&times;</button>
+            </div>
+
+            <div class="form-group">
+                <label for="lecture-text">Paste Lecture Text</label>
+                <textarea id="lecture-text" placeholder="Paste lecture notes or transcript..."></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="lecture-file">Or Upload (.txt, .md, .pdf)</label>
+                    <input type="file" id="lecture-file" accept=".txt,.md,.pdf">
+                </div>
+                <div class="form-group">
+                    <label for="summary-length">Summary Length</label>
+                    <select id="summary-length">
+                        <option value="short">Short</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="long">Long</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="quick-actions" style="margin-top: 10px;">
+                <button class="btn btn-primary" onclick="summarizeLecture()">Summarize</button>
+                <button class="btn btn-secondary" onclick="clearLectureInputs()">Clear</button>
+            </div>
+
+            <div class="cards-grid" style="margin-top: 16px;">
+                <div class="card">
+                    <div class="card-title">Summary</div>
+                    <div id="summary-output" class="assignment-meta">No summary yet.</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Key Points</div>
+                    <ul id="keypoints-output" class="assignment-meta"></ul>
+                </div>
+                <div class="card">
+                    <div class="card-title">Interactive Quiz</div>
+                    <div id="quiz-container">
+                        <div id="quiz-start" class="quiz-section">
+                            <p>Test your knowledge with 5 questions based on the summarized content!</p>
+                            <button id="start-quiz-btn" class="btn-primary">Start Quiz</button>
+                        </div>
+                        <div id="quiz-questions" class="quiz-section" style="display: none;">
+                            <div class="quiz-progress">
+                                <div class="progress-bar">
+                                    <div id="quiz-progress" class="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <span id="quiz-counter">Question 1 of 5</span>
+                            </div>
+                            <div id="quiz-timer" class="quiz-timer">Time: <span id="time-left">60</span>s</div>
+                            <div id="question-container">
+                                <h3 id="question-text"></h3>
+                                <div id="answer-options"></div>
+                            </div>
+                            <button id="next-question-btn" class="btn-primary" style="display: none;">Next Question</button>
+                        </div>
+                        <div id="quiz-results" class="quiz-section" style="display: none;">
+                            <h3>Quiz Results</h3>
+                            <div id="score-display"></div>
+                            <div id="performance-analysis"></div>
+                            <button id="retake-quiz-btn" class="btn-primary">Retake Quiz</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // Global variables for user session
+        let currentUser = null;
+        let userRole = 'teacher'; // Default role for demo
+
+        // Authentication functions
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Simulate login (in real app, this would be an API call)
+            // Default to student role for demo
+            currentUser = {
+                email: email,
+                role: 'student',
+                name: 'Alex Johnson',
+                grade: '2nd Year',
+                subject: null
+            };
+            
+            showDashboard('student');
+        }
+
+        function handleSignup() {
+            const firstName = document.getElementById('signup-firstname').value;
+            const lastName = document.getElementById('signup-lastname').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const selectedRole = document.getElementById('signup-role').value;
+            const grade = document.getElementById('signup-grade').value;
+            const subject = document.getElementById('signup-subject').value;
+            
+            if (!firstName || !lastName || !email || !password) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (selectedRole === 'student' && !grade) {
+                alert('Please select your academic year');
+                return;
+            }
+            
+            if (selectedRole === 'teacher' && !subject) {
+                alert('Please select your subject area');
+                return;
+            }
+            
+            // Simulate signup (in real app, this would be an API call)
+            currentUser = {
+                email: email,
+                role: selectedRole,
+                name: `${firstName} ${lastName}`,
+                grade: grade,
+                subject: subject
+            };
+            
+            alert('Account created successfully!');
+            showDashboard(selectedRole);
+        }
+
+        function showLogin() {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+        }
+
+        function showSignup() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.remove('hidden');
+        }
+
+        function showDashboard(role) {
+            document.getElementById('auth-page').style.display = 'none';
+            
+            if (role === 'student') {
+                document.getElementById('student-dashboard').classList.add('active');
+                document.getElementById('student-name').textContent = currentUser.name;
+                document.getElementById('student-grade').textContent = currentUser.grade;
+                document.querySelector('#student-dashboard .user-avatar').textContent = currentUser.name.charAt(0);
+            } else {
+                document.getElementById('teacher-dashboard').classList.add('active');
+                document.getElementById('teacher-name').textContent = currentUser.name;
+                document.getElementById('teacher-subject').textContent = currentUser.subject;
+                document.querySelector('#teacher-dashboard .user-avatar').textContent = currentUser.name.charAt(0);
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('auth-page').style.display = 'flex';
+            document.getElementById('student-dashboard').classList.remove('active');
+            document.getElementById('teacher-dashboard').classList.remove('active');
+            
+            // Reset forms
+            document.getElementById('login-email').value = '';
+            document.getElementById('login-password').value = '';
+            showLogin();
+        }
+
+        // Role selection functionality for signup form
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'signup-role') {
+                const role = e.target.value;
+                    const studentFields = document.getElementById('student-fields');
+                    const teacherFields = document.getElementById('teacher-fields');
+                    
+                    if (role === 'student') {
+                        studentFields.classList.remove('hidden');
+                        teacherFields.classList.add('hidden');
+                    } else {
+                        studentFields.classList.add('hidden');
+                        teacherFields.classList.remove('hidden');
+                }
+            }
+        });
+
+        // Navigation functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.nav-link')) {
+                e.preventDefault();
+                const navLink = e.target.closest('.nav-link');
+                const section = navLink.dataset.section;
+                
+                if (section) {
+                    // Remove active class from all nav links
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked nav link
+                    navLink.classList.add('active');
+                    
+                    // Hide all content sections
+                    document.querySelectorAll('.content-section').forEach(contentSection => {
+                        contentSection.classList.add('hidden');
+                    });
+                    
+                    // Show selected section
+                    const targetSection = document.getElementById(section);
+                    if (targetSection) {
+                        targetSection.classList.remove('hidden');
+                    }
+                }
+            }
+        });
+
+        // Modal functionality
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // Teacher functionality
+        function createAssignment() {
+            const title = document.getElementById('assignment-title').value;
+            const course = document.getElementById('assignment-course').value;
+            const dueDate = document.getElementById('assignment-due-date').value;
+            const dueTime = document.getElementById('assignment-due-time').value;
+            const description = document.getElementById('assignment-description').value;
+            const points = document.getElementById('assignment-points').value;
+            const type = document.getElementById('assignment-type').value;
+            
+            if (!title || !course || !dueDate || !description) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Simulate creating assignment
+            alert('Assignment created successfully!');
+            closeModal('create-assignment-modal');
+            
+            // Clear form
+            document.getElementById('assignment-title').value = '';
+            document.getElementById('assignment-course').value = '';
+            document.getElementById('assignment-due-date').value = '';
+            document.getElementById('assignment-due-time').value = '';
+            document.getElementById('assignment-description').value = '';
+            document.getElementById('assignment-points').value = '';
+            document.getElementById('assignment-type').value = '';
+        }
+
+        function createCourse() {
+            const name = document.getElementById('course-name').value;
+            const code = document.getElementById('course-code').value;
+            const period = document.getElementById('course-period').value;
+            const room = document.getElementById('course-room').value;
+            const description = document.getElementById('course-description').value;
+            
+            if (!name || !code || !period || !room) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Simulate creating course
+            alert('Course created successfully!');
+            closeModal('create-course-modal');
+            
+            // Clear form
+            document.getElementById('course-name').value = '';
+            document.getElementById('course-code').value = '';
+            document.getElementById('course-period').value = '';
+            document.getElementById('course-room').value = '';
+            document.getElementById('course-description').value = '';
+        }
+
+        function addStudent() {
+            const email = document.getElementById('student-email').value;
+            const course = document.getElementById('student-course-select').value;
+            
+            if (!email || !course) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Simulate adding student
+            alert('Student added to course successfully!');
+            closeModal('add-student-modal');
+            
+            // Clear form
+            document.getElementById('student-email').value = '';
+            document.getElementById('student-course-select').value = '';
+        }
+
+        function sendMessage() {
+            const to = document.getElementById('message-to').value;
+            const subject = document.getElementById('message-subject').value;
+            const body = document.getElementById('message-body').value;
+            
+            if (!to || !subject || !body) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Simulate sending message
+            alert('Message sent successfully!');
+            closeModal('compose-message-modal');
+            
+            // Clear form
+            document.getElementById('message-to').value = '';
+            document.getElementById('message-subject').value = '';
+            document.getElementById('message-body').value = '';
+        }
+
+        function uploadResource() {
+            const title = document.getElementById('resource-title').value;
+            const type = document.getElementById('resource-type').value;
+            const course = document.getElementById('resource-course').value;
+            const file = document.getElementById('resource-file').value;
+            const description = document.getElementById('resource-description').value;
+            
+            if (!title || !type || !file) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Simulate uploading resource
+            alert('Resource uploaded successfully!');
+            closeModal('upload-resource-modal');
+            
+            // Clear form
+            document.getElementById('resource-title').value = '';
+            document.getElementById('resource-type').value = '';
+            document.getElementById('resource-course').value = '';
+            document.getElementById('resource-file').value = '';
+            document.getElementById('resource-description').value = '';
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Lucide icons if available
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            // Show student fields by default in signup (will be toggled based on selection)
+            document.getElementById('student-fields').classList.remove('hidden');
+            document.getElementById('teacher-fields').classList.add('hidden');
+
+            // Initialize AI Tutor
+            initializeAiTutor();
+            // Initialize voice controls and CSE video library
+            try { initVoiceControls(); } catch {}
+            try { initCseVideoLibrary(); } catch {}
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // ESC key closes modals
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                }
+            }
+            
+            // Enter key submits forms in modals
+            if (e.key === 'Enter' && e.target.closest('.modal')) {
+                const modal = e.target.closest('.modal');
+                const primaryButton = modal.querySelector('.btn-primary');
+                if (primaryButton) {
+                    primaryButton.click();
+                }
+            }
+        });
+
+        // Add some interactive features
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.closest('.card')) {
+                e.target.closest('.card').style.transform = 'translateY(-5px)';
+            }
+        });
+
+        document.addEventListener('mouseout', function(e) {
+            if (e.target.closest('.card')) {
+                e.target.closest('.card').style.transform = 'translateY(0)';
+            }
+        });
+
+        // Simulate real-time notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#d4edda' : type === 'error' ? '#f8d7da' : '#d1ecf1'};
+                color: ${type === 'success' ? '#155724' : type === 'error' ? '#721c24' : '#0c5460'};
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                z-index: 9999;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Demo notifications (remove in production)
+        setTimeout(() => {
+            if (currentUser) {
+                showNotification('Welcome to EduConnect!', 'success');
+            }
+        }, 1000);
+
+        // ================= AI Tutor Logic =================
+        let aiTutorState = {
+            difficulty: 'auto',
+            paceScore: 0.5, // 0 (slow) .. 1 (fast)
+            history: []
+        };
+
+        function initializeAiTutor() {
+            const toggle = document.getElementById('ai-tutor-toggle');
+            const panel = document.getElementById('ai-tutor-panel');
+            const closeBtn = document.getElementById('ai-close');
+            const settingsBtn = document.getElementById('ai-settings');
+            const sendBtn = document.getElementById('ai-send');
+            const input = document.getElementById('ai-input');
+            const difficulty = document.getElementById('ai-difficulty');
+            const messages = document.getElementById('ai-messages');
+
+            const greet = 'Hi! I\'m your AI tutor. Ask me anything, or type \'quiz\' to practice.';
+            messages.appendChild(createAiMessage(greet, 'bot'));
+
+            toggle.addEventListener('click', () => {
+                panel.classList.toggle('active');
+                if (panel.classList.contains('active')) { input.focus(); }
+            });
+            closeBtn.addEventListener('click', () => panel.classList.remove('active'));
+            settingsBtn.addEventListener('click', () => openModal('ai-settings-modal'));
+            difficulty.addEventListener('change', (e) => {
+                aiTutorState.difficulty = e.target.value;
+            });
+
+            function sendCurrent() {
+                const text = input.value.trim();
+                if (!text) return;
+                messages.appendChild(createAiMessage(text, 'user'));
+                input.value = '';
+                respondFromTutor(text);
+            }
+            sendBtn.addEventListener('click', sendCurrent);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') sendCurrent();
+            });
+        }
+
+        function createAiMessage(text, role) {
+            const div = document.createElement('div');
+            div.className = `ai-msg ${role}`;
+            div.textContent = text;
+            return div;
+        }
+
+        async function respondFromTutor(userText) {
+            const messages = document.getElementById('ai-messages');
+            const startTime = performance.now();
+            try {
+            const lower = userText.toLowerCase();
+            let topic = 'general study skills';
+            if (lower.includes('algebra') || lower.includes('equation')) topic = 'algebra';
+            if (lower.includes('calculus') || lower.includes('derivative') || lower.includes('integral')) topic = 'calculus';
+            if (lower.includes('history')) topic = 'history';
+            if (lower.includes('literature') || lower.includes('essay')) topic = 'literature';
+                if (lower.includes('data structure') || lower.includes('linked list') || lower.includes('stack') || lower.includes('queue') || lower.includes('tree') || lower.includes('graph')) topic = 'dsa';
+                if (lower.includes('network') || lower.includes('osi') || lower.includes('tcp') || lower.includes('udp') || lower.includes('ip')) topic = 'cn';
+                if (lower.includes('database') || lower.includes('sql') || lower.includes('normalization') || lower.includes('transaction') || lower.includes('acid')) topic = 'dbms';
+
+            const difficulty = aiTutorState.difficulty === 'auto' ? inferDifficulty() : aiTutorState.difficulty;
+                let reply = await maybeAskLLM(topic, difficulty, userText);
+                if (!reply || !reply.trim()) reply = generateAdaptiveReply(topic, difficulty, userText);
+                if (!reply || !reply.trim()) reply = fallbackAnswer(userText);
+
+                messages.appendChild(createAiMessage(reply, 'bot'));
+                messages.scrollTop = messages.scrollHeight;
+                const elapsed = (performance.now() - startTime) / 1000;
+                updatePaceScore(elapsed);
+            } catch (e) {
+                const safe = fallbackAnswer(userText);
+                messages.appendChild(createAiMessage(safe, 'bot'));
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+
+        async function maybeAskLLM(topic, difficulty, userText){
+            const proxy = sessionStorage.getItem('ai_proxy');
+            const key = sessionStorage.getItem('ai_key');
+            const system = `You are an adaptive tutor for B.Tech 2nd year CSE. Difficulty: ${difficulty}. Topic: ${topic}. Respond with concise steps, an example, and one follow-up question.`;
+            const payload = { messages: [ { role:'system', content: system }, { role:'user', content: userText } ] };
+            try {
+                if (proxy && proxy.startsWith('http')){
+                    const r = await fetch(proxy, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                    const data = await r.json();
+                    return data.choices?.[0]?.message?.content || null;
+                }
+                if (key){
+                    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method:'POST',
+                        headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
+                        body: JSON.stringify({ model:'gpt-4o-mini', ...payload })
+                    });
+                    const data = await r.json();
+                    return data.choices?.[0]?.message?.content || null;
+                }
+            } catch {}
+            return null;
+        }
+
+        function saveAiSettings(){
+            const proxy = document.getElementById('ai-proxy').value.trim();
+            const key = document.getElementById('ai-key').value.trim();
+            if (proxy) sessionStorage.setItem('ai_proxy', proxy); else sessionStorage.removeItem('ai_proxy');
+            if (key) sessionStorage.setItem('ai_key', key); else sessionStorage.removeItem('ai_key');
+            showNotification('AI settings saved for this tab.', 'success');
+            closeModal('ai-settings-modal');
+        }
+        function clearAiSettings(){
+            sessionStorage.removeItem('ai_proxy');
+            sessionStorage.removeItem('ai_key');
+            document.getElementById('ai-proxy').value='';
+            document.getElementById('ai-key').value='';
+            showNotification('AI settings cleared.', 'info');
+        }
+
+        async function testAiConnection(){
+            const status = document.getElementById('ai-test-status');
+            status.textContent = 'Status: Testing...';
+            const proxy = document.getElementById('ai-proxy').value.trim();
+            const key = document.getElementById('ai-key').value.trim();
+            const payload = { messages:[{role:'user', content:'Say OK if you can read this.'}] };
+            try{
+                if (proxy){
+                    const r = await fetch(proxy, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+                    const ok = r.ok; const data = await r.text();
+                    status.textContent = ok? 'Status: Proxy OK' : `Status: Proxy error ${r.status}`;
+                    return;
+                }
+                if (key){
+                    const r = await fetch('https://api.openai.com/v1/chat/completions', { method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`}, body: JSON.stringify({ model:'gpt-4o-mini', ...payload }) });
+                    status.textContent = r.ok? 'Status: Direct OpenAI OK' : `Status: OpenAI error ${r.status}`;
+                    return;
+                }
+                status.textContent = 'Status: Set a proxy or a temporary key to test.';
+            }catch(e){ status.textContent = 'Status: Network/Browser blocked request.'; }
+        }
+
+        function fallbackAnswer(userText){
+            const q = userText.toLowerCase();
+            // CSE 2nd-year quick knowledge base
+            if (/linked list|stack|queue|tree|graph|hash|complexity/.test(q)){
+                return [
+                    'Topic: Data Structures (DSA) • Level: '+inferDifficulty(),
+                    'Key idea: Choose the structure based on operations — e.g., arrays for O(1) indexing, linked lists for O(1) insert/delete at head, stacks/queues for LIFO/FIFO.',
+                    'For trees/graphs, practice traversals (DFS/BFS). Consider complexity and memory tradeoffs.',
+                    'Try: implement push/pop for a stack, then analyze time complexity.'
+                ].join('\n');
+            }
+            if (/osi|tcp|udp|routing|ip|subnet|dns|http/.test(q)){
+                return [
+                    'Topic: Computer Networks • Level: '+inferDifficulty(),
+                    'OSI vs TCP/IP: know layer responsibilities and examples (HTTP at App, TCP/UDP at Transport).',
+                    'TCP is reliable (handshake, retransmission); UDP is faster but unreliable.',
+                    'Try: compare TCP vs UDP for video calls and file download with reasons.'
+                ].join('\n');
+            }
+            if (/sql|join|normaliza|acid|transaction|index|query/.test(q)){
+                return [
+                    'Topic: DBMS • Level: '+inferDifficulty(),
+                    'Normalization reduces redundancy (1NF→3NF). ACID: Atomicity, Consistency, Isolation, Durability.',
+                    'Practice joins (INNER/LEFT/RIGHT/FULL) and indexing impact on query plans.',
+                    'Try: write a SQL query using JOIN to list students and their courses.'
+                ].join('\n');
+            }
+            return [
+                'I could not detect the exact topic. Here is a general strategy:',
+                '1) Break the problem into smaller steps and attempt a simple example.',
+                '2) Identify definitions, core formulas or APIs involved.',
+                '3) Explain your approach, then ask me to check or give a hint.',
+                'Tip: type "quiz" for quick practice.'
+            ].join('\n');
+        }
+
+        function inferDifficulty() {
+            if (aiTutorState.paceScore < 0.35) return 'beginner';
+            if (aiTutorState.paceScore > 0.7) return 'advanced';
+            return 'intermediate';
+        }
+
+        function updatePaceScore(seconds) {
+            // EMA update: shorter cycles -> higher pace
+            const target = Math.max(0, Math.min(1, 1 - seconds / 8));
+            aiTutorState.paceScore = aiTutorState.paceScore * 0.8 + target * 0.2;
+        }
+
+        function generateAdaptiveReply(topic, difficulty, userText) {
+            // Simple rule-based tutor content
+            const detail = difficulty === 'beginner' ? 0 : difficulty === 'advanced' ? 2 : 1;
+            if (userText.trim().toLowerCase() === 'quiz') {
+                return buildQuickQuiz(topic, difficulty).join('\n');
+            }
+            const base = {
+                algebra: [
+                    'Start by isolating the variable on one side using inverse operations.',
+                    'Check your solution by substituting it back into the original equation.'
+                ],
+                calculus: [
+                    'For derivatives, apply rules like power, product, quotient, and chain.',
+                    'For integrals, consider substitution or parts when basic antiderivatives fail.'
+                ],
+                history: [
+                    'Identify causes, events, and consequences; place them on a timeline.',
+                    'Contrast perspectives from primary sources to understand bias.'
+                ],
+                literature: [
+                    'Summarize plot, identify themes, then analyze how literary devices support them.',
+                    'Use quotations as evidence and explain their relevance.'
+                ],
+                'general study skills': [
+                    'Break tasks into small goals, use spaced repetition, and test yourself.',
+                    'Teach a concept to someone else to reveal gaps in understanding.'
+                ]
+            }[topic];
+
+            const addOns = [
+                'Try a simple example first to build intuition.',
+                'Explain your reasoning step-by-step; I can give hints if you get stuck.',
+                'If you want practice, type "quiz".'
+            ];
+
+            const segments = [];
+            segments.push(`Topic: ${topic} • Level: ${difficulty}`);
+            segments.push(base[0]);
+            if (detail >= 1) segments.push(base[1]);
+            if (detail >= 2) segments.push('Edge case: look for units, domain restrictions, and common mistakes.');
+            segments.push(addOns[Math.floor(Math.random() * addOns.length)]);
+            return segments.join('\n');
+        }
+
+        function buildQuickQuiz(topic, difficulty) {
+            const easy = [
+                '1) Solve: 2x + 6 = 14',
+                '2) Identify the main theme of your last reading.'
+            ];
+            const mid = [
+                '1) Differentiate: f(x) = x^3 sin x',
+                '2) Give two causes of the event you\'re studying.'
+            ];
+            const hard = [
+                '1) Evaluate ∫ x e^{x} dx',
+                '2) Compare two historians\' interpretations of the same event.'
+            ];
+            const bank = difficulty === 'beginner' ? easy : difficulty === 'advanced' ? hard : mid;
+            return ['Quick practice:', ...bank, 'Reply with your answers; I\'ll adapt next.'];
+        }
+
+        // ================= Lecture Summarizer Logic =================
+        document.getElementById('lecture-file').addEventListener('change', async function(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            if (/\.pdf$/i.test(file.name)) {
+                try {
+                    const buf = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+                    let fullText = '';
+                    for (let p = 1; p <= pdf.numPages; p++) {
+                        const page = await pdf.getPage(p);
+                        const content = await page.getTextContent();
+                        fullText += content.items.map(i => i.str).join(' ') + '\n';
+                        if (fullText.length > 50000) break;
+                    }
+                    document.getElementById('lecture-text').value = fullText.trim();
+                    showNotification('PDF imported successfully.', 'success');
+                } catch (err) {
+                    showNotification('Failed to read PDF. Try a text extract.', 'error');
+                }
+                return;
+            }
+            if (/\.txt$|\.md$/i.test(file.name)) {
+            const text = await file.text();
+            document.getElementById('lecture-text').value = text;
+            } else {
+                showNotification('Unsupported file type. Use .txt, .md, or .pdf', 'error');
+                e.target.value = '';
+            }
+        });
+
+        function clearLectureInputs() {
+            document.getElementById('lecture-text').value = '';
+            document.getElementById('lecture-file').value = '';
+            document.getElementById('summary-output').textContent = 'No summary yet.';
+            document.getElementById('keypoints-output').innerHTML = '';
+            
+            // Reset quiz state
+            document.getElementById('quiz-start').style.display = 'block';
+            document.getElementById('quiz-questions').style.display = 'none';
+            document.getElementById('quiz-results').style.display = 'none';
+            
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            if (startQuizBtn) {
+                startQuizBtn.disabled = true;
+                startQuizBtn.textContent = 'Generate Summary First';
+            }
+            
+            // Clear any running timer
+            if (quizTimer) {
+                clearInterval(quizTimer);
+                quizTimer = null;
+            }
+        }
+
+        function summarizeLecture() {
+            const raw = document.getElementById('lecture-text').value.trim();
+            const length = document.getElementById('summary-length').value;
+            if (!raw) {
+                showNotification('Please paste lecture text or upload a file.', 'error');
+                return;
+            }
+
+            const sentences = splitIntoSentences(raw);
+            const summary = extractiveSummary(sentences, length);
+            const keypoints = extractKeyPoints(sentences, 5);
+
+            document.getElementById('summary-output').textContent = summary;
+            const kpEl = document.getElementById('keypoints-output');
+            kpEl.innerHTML = '';
+            keypoints.forEach(p => { const li = document.createElement('li'); li.textContent = p; kpEl.appendChild(li); });
+            
+            // Enable quiz button after summary is generated
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            if (startQuizBtn) {
+                startQuizBtn.disabled = false;
+                startQuizBtn.textContent = 'Start Quiz';
+            }
+        }
+
+        function splitIntoSentences(text) {
+            return text
+                .replace(/\s+/g, ' ')
+                .split(/(?<=[.!?])\s+/)
+                .filter(s => s && s.length > 3)
+                .slice(0, 1200); // cap for performance
+        }
+
+        function extractiveSummary(sentences, length) {
+            // Very lightweight frequency-based extractive summary
+            const tokens = sentences.join(' ').toLowerCase().match(/[a-zA-ZÀ-ÿ0-9']+/g) || [];
+            const stop = new Set(['the','a','an','and','or','but','is','are','was','were','to','of','in','for','on','with','as','by','that','this','it','from','at','be','have','has','had']);
+            const freq = Object.create(null);
+            for (const t of tokens) { if (!stop.has(t)) freq[t] = (freq[t]||0)+1; }
+            const scored = sentences.map((s, i) => ({ i, s, score: scoreSentence(s, freq) }));
+            scored.sort((a,b)=>b.score-a.score);
+            const keep = length === 'short' ? 3 : length === 'long' ? 8 : 5;
+            const picked = scored.slice(0, Math.min(keep, scored.length)).sort((a,b)=>a.i-b.i).map(x=>x.s);
+            return picked.join(' ');
+        }
+
+        function scoreSentence(s, freq) {
+            const words = s.toLowerCase().match(/[a-zA-ZÀ-ÿ0-9']+/g) || [];
+            let score = 0;
+            for (const w of words) score += (freq[w] || 0);
+            // Prefer mid-length sentences
+            const lenPenalty = Math.abs(words.length - 18) / 18;
+            return score - lenPenalty;
+        }
+
+        function extractKeyPoints(sentences, maxPoints) {
+            const points = [];
+            for (const s of sentences) {
+                if (/\b(key|important|note|remember|therefore|thus|in summary)\b/i.test(s) || /:\s| - /i.test(s)) {
+                    points.push(cleanPoint(s));
+                }
+                if (points.length >= maxPoints) break;
+            }
+            // fallback: take top scored sentences as bullet points
+            if (points.length < Math.max(3, Math.floor(maxPoints/2))) {
+                const extra = extractiveSummary(sentences, 'short').split(/(?<=[.!?])\s+/);
+                for (const e of extra) if (e) points.push(cleanPoint(e));
+            }
+            return points.slice(0, maxPoints);
+        }
+
+        function cleanPoint(s) {
+            return s.replace(/^[\-•\*\d\)\(\s]+/, '').trim();
+        }
+
+        // ================= Interactive Quiz System =================
+        let currentQuiz = null;
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizTimer = null;
+        let timeLeft = 60;
+
+        // Quiz data structure with 5 questions per subject
+        const quizDatabase = {
+            'general': [
+                {
+                    question: "What is the most effective study technique for long-term retention?",
+                    options: ["Cramming the night before", "Spaced repetition", "Reading once", "Highlighting everything"],
+                    correct: 1,
+                    explanation: "Spaced repetition involves reviewing material at increasing intervals, which is scientifically proven to improve long-term retention."
+                },
+                {
+                    question: "Which method helps identify knowledge gaps most effectively?",
+                    options: ["Passive reading", "Active recall", "Re-reading notes", "Listening to lectures"],
+                    correct: 1,
+                    explanation: "Active recall forces you to retrieve information from memory, revealing what you don't know and strengthening neural pathways."
+                },
+                {
+                    question: "What is the optimal study session length for maximum focus?",
+                    options: ["2-3 hours straight", "25-30 minutes with breaks", "1 hour continuous", "All day sessions"],
+                    correct: 1,
+                    explanation: "The Pomodoro Technique suggests 25-30 minute focused sessions with short breaks to maintain optimal concentration."
+                },
+                {
+                    question: "Which environment is most conducive to effective studying?",
+                    options: ["Complete silence", "Moderate background noise", "Loud music", "TV on"],
+                    correct: 1,
+                    explanation: "Moderate background noise (like a coffee shop) can enhance creativity and focus, while complete silence or loud noise can be distracting."
+                },
+                {
+                    question: "What percentage of information is typically retained through passive reading?",
+                    options: ["80%", "50%", "20%", "10%"],
+                    correct: 3,
+                    explanation: "Passive reading typically results in only 10% retention. Active learning methods significantly improve retention rates."
+                }
+            ],
+            'algebra': [
+                {
+                    question: "What is the solution to 2x + 6 = 14?",
+                    options: ["x = 4", "x = 8", "x = 10", "x = 2"],
+                    correct: 0,
+                    explanation: "Subtract 6 from both sides: 2x = 8, then divide by 2: x = 4"
+                },
+                {
+                    question: "Which property is used in the equation 3(x + 2) = 3x + 6?",
+                    options: ["Commutative", "Associative", "Distributive", "Identity"],
+                    correct: 2,
+                    explanation: "The distributive property states that a(b + c) = ab + ac"
+                },
+                {
+                    question: "What is the slope of the line y = 2x + 3?",
+                    options: ["2", "3", "5", "1"],
+                    correct: 0,
+                    explanation: "In the slope-intercept form y = mx + b, m represents the slope"
+                },
+                {
+                    question: "Solve for x: x² - 9 = 0",
+                    options: ["x = 3", "x = -3", "x = ±3", "x = 9"],
+                    correct: 2,
+                    explanation: "x² = 9, so x = ±√9 = ±3"
+                },
+                {
+                    question: "What is the y-intercept of y = -2x + 5?",
+                    options: ["-2", "5", "3", "0"],
+                    correct: 1,
+                    explanation: "In y = mx + b, b represents the y-intercept"
+                }
+            ],
+            'calculus': [
+                {
+                    question: "What is the derivative of x³?",
+                    options: ["3x²", "x²", "3x", "x⁴/4"],
+                    correct: 0,
+                    explanation: "Using the power rule: d/dx(xⁿ) = nxⁿ⁻¹, so d/dx(x³) = 3x²"
+                },
+                {
+                    question: "What is ∫2x dx?",
+                    options: ["x² + C", "2x² + C", "x + C", "2 + C"],
+                    correct: 0,
+                    explanation: "∫2x dx = 2∫x dx = 2(x²/2) + C = x² + C"
+                },
+                {
+                    question: "What is the derivative of sin(x)?",
+                    options: ["cos(x)", "-cos(x)", "sin(x)", "-sin(x)"],
+                    correct: 0,
+                    explanation: "The derivative of sin(x) is cos(x)"
+                },
+                {
+                    question: "What is the limit as x approaches 0 of sin(x)/x?",
+                    options: ["0", "1", "∞", "undefined"],
+                    correct: 1,
+                    explanation: "This is a fundamental limit: lim(x→0) sin(x)/x = 1"
+                },
+                {
+                    question: "What is the derivative of ln(x)?",
+                    options: ["1/x", "x", "eˣ", "1"],
+                    correct: 0,
+                    explanation: "The derivative of ln(x) is 1/x"
+                }
+            ],
+            'history': [
+                {
+                    question: "What was the primary cause of World War I?",
+                    options: ["Economic competition", "Assassination of Archduke Franz Ferdinand", "Territorial disputes", "All of the above"],
+                    correct: 3,
+                    explanation: "While the assassination was the immediate trigger, all factors contributed to the complex causes of WWI"
+                },
+                {
+                    question: "Which civilization built the pyramids?",
+                    options: ["Ancient Greeks", "Ancient Egyptians", "Romans", "Mayans"],
+                    correct: 1,
+                    explanation: "The Ancient Egyptians built the pyramids as tombs for their pharaohs"
+                },
+                {
+                    question: "What was the Renaissance period known for?",
+                    options: ["Religious wars", "Cultural and intellectual revival", "Industrial revolution", "Colonial expansion"],
+                    correct: 1,
+                    explanation: "The Renaissance was characterized by a revival of classical learning and cultural achievements"
+                },
+                {
+                    question: "Who wrote 'The Communist Manifesto'?",
+                    options: ["Lenin", "Marx and Engels", "Stalin", "Trotsky"],
+                    correct: 1,
+                    explanation: "Karl Marx and Friedrich Engels co-authored 'The Communist Manifesto' in 1848"
+                },
+                {
+                    question: "What was the main purpose of the Silk Road?",
+                    options: ["Military conquest", "Trade and cultural exchange", "Religious pilgrimage", "Scientific research"],
+                    correct: 1,
+                    explanation: "The Silk Road facilitated trade and cultural exchange between East and West"
+                }
+            ],
+            'literature': [
+                {
+                    question: "What is the main theme of Shakespeare's 'Romeo and Juliet'?",
+                    options: ["Revenge", "Love conquers all", "The power of fate", "Social class conflict"],
+                    correct: 1,
+                    explanation: "The play explores how love transcends social boundaries and family feuds"
+                },
+                {
+                    question: "Which literary device is used in 'The road was a ribbon of moonlight'?",
+                    options: ["Metaphor", "Simile", "Personification", "Alliteration"],
+                    correct: 0,
+                    explanation: "This is a metaphor comparing the road to a ribbon"
+                },
+                {
+                    question: "What is the primary conflict in 'To Kill a Mockingbird'?",
+                    options: ["Man vs. Nature", "Man vs. Society", "Man vs. Self", "Man vs. Technology"],
+                    correct: 1,
+                    explanation: "The novel explores racial injustice and moral conflict within society"
+                },
+                {
+                    question: "Who wrote '1984'?",
+                    options: ["Aldous Huxley", "George Orwell", "Ray Bradbury", "H.G. Wells"],
+                    correct: 1,
+                    explanation: "George Orwell wrote '1984', a dystopian novel about totalitarian control"
+                },
+                {
+                    question: "What is the tone of Edgar Allan Poe's 'The Raven'?",
+                    options: ["Comedic", "Melancholic", "Optimistic", "Adventurous"],
+                    correct: 1,
+                    explanation: "The poem has a melancholic tone, reflecting grief and loss"
+                }
+            ]
+        };
+
+        function generateQuizFromSummarizedData(summarizedText) {
+            const sentences = splitIntoSentences(summarizedText);
+            const quiz = [];
+            
+            // Extract key terms and concepts
+            const keyTerms = extractKeyTerms(sentences);
+            const importantFacts = extractImportantFacts(sentences);
+            
+            // Generate questions based on content
+            if (keyTerms.length > 0) {
+                quiz.push({
+                    question: `What is the definition of "${keyTerms[0]}" based on the content?`,
+                    options: generateDefinitionOptions(keyTerms[0], sentences),
+                    correct: 0,
+                    explanation: `"${keyTerms[0]}" is a key concept discussed in the material.`
+                });
+            }
+            
+            if (importantFacts.length > 0) {
+                quiz.push({
+                    question: importantFacts[0].question,
+                    options: importantFacts[0].options,
+                    correct: importantFacts[0].correct,
+                    explanation: importantFacts[0].explanation
+                });
+            }
+            
+            // Fill remaining questions from general knowledge
+            const generalQuestions = quizDatabase['general'].slice(0, 5 - quiz.length);
+            return [...quiz, ...generalQuestions].slice(0, 5);
+        }
+
+        function extractKeyTerms(sentences) {
+            const text = sentences.join(' ').toLowerCase();
+            const terms = text.match(/\b([a-z]{6,})\b/g) || [];
+            const termCounts = {};
+            terms.forEach(term => {
+                if (termCounts[term]) termCounts[term]++;
+                else termCounts[term] = 1;
+            });
+            return Object.keys(termCounts)
+                .sort((a, b) => termCounts[b] - termCounts[a])
+                .slice(0, 3);
+        }
+
+        function extractImportantFacts(sentences) {
+            const facts = [];
+            sentences.forEach(sentence => {
+                if (sentence.includes('because') || sentence.includes('due to') || sentence.includes('caused')) {
+                    facts.push({
+                        question: "What was identified as a cause or reason in the content?",
+                        options: [sentence, "Not mentioned", "Unclear", "Multiple factors"],
+                        correct: 0,
+                        explanation: "This information was explicitly stated in the material."
+                    });
+                }
+            });
+            return facts.slice(0, 2);
+        }
+
+        function generateDefinitionOptions(term, sentences) {
+            const context = sentences.find(s => s.toLowerCase().includes(term.toLowerCase()));
+            return [
+                context || `A key concept mentioned in the material`,
+                "A type of measurement",
+                "A historical event",
+                "A mathematical formula"
+            ];
+        }
+
+        // Quiz control functions
+        function startQuiz() {
+            const summarizedText = document.getElementById('summary-output').textContent;
+            if (!summarizedText || summarizedText === 'No summary yet.') {
+                showNotification('Please generate a summary first before starting the quiz.', 'error');
+                return;
+            }
+
+            currentQuiz = generateQuizFromSummarizedData(summarizedText);
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            timeLeft = 60;
+
+            document.getElementById('quiz-start').style.display = 'none';
+            document.getElementById('quiz-questions').style.display = 'block';
+            document.getElementById('quiz-results').style.display = 'none';
+
+            startTimer();
+            displayQuestion();
+        }
+
+        function startTimer() {
+            quizTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('time-left').textContent = timeLeft;
+                
+                const timerElement = document.getElementById('quiz-timer');
+                if (timeLeft <= 10) {
+                    timerElement.className = 'quiz-timer danger';
+                } else if (timeLeft <= 30) {
+                    timerElement.className = 'quiz-timer warning';
+                }
+
+                if (timeLeft <= 0) {
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            const question = currentQuiz[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            document.getElementById('quiz-counter').textContent = `Question ${currentQuestionIndex + 1} of ${currentQuiz.length}`;
+            
+            const progress = ((currentQuestionIndex + 1) / currentQuiz.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+
+            const optionsContainer = document.getElementById('answer-options');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'answer-option';
+                optionElement.textContent = option;
+                optionElement.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(optionElement);
+            });
+
+            document.getElementById('next-question-btn').style.display = 'none';
+        }
+
+        function selectAnswer(selectedIndex) {
+            // Remove previous selections
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Mark selected answer
+            document.querySelectorAll('.answer-option')[selectedIndex].classList.add('selected');
+            
+            // Store user's answer
+            userAnswers[currentQuestionIndex] = selectedIndex;
+
+            // Show next button
+            document.getElementById('next-question-btn').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuiz.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(quizTimer);
+            document.getElementById('quiz-questions').style.display = 'none';
+            document.getElementById('quiz-results').style.display = 'block';
+            
+            calculateResults();
+        }
+
+        function calculateResults() {
+            let correctAnswers = 0;
+            const results = [];
+
+            currentQuiz.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.correct;
+                if (isCorrect) correctAnswers++;
+
+                results.push({
+                    question: question.question,
+                    userAnswer: userAnswer !== undefined ? question.options[userAnswer] : 'Not answered',
+                    correctAnswer: question.options[question.correct],
+                    isCorrect: isCorrect,
+                    explanation: question.explanation
+                });
+            });
+
+            const score = Math.round((correctAnswers / currentQuiz.length) * 100);
+            displayResults(score, results);
+        }
+
+        function displayResults(score, results) {
+            const scoreDisplay = document.getElementById('score-display');
+            scoreDisplay.innerHTML = `
+                <div class="score-number">${score}%</div>
+                <div>You got ${results.filter(r => r.isCorrect).length} out of ${currentQuiz.length} questions correct!</div>
+            `;
+
+            const performanceAnalysis = document.getElementById('performance-analysis');
+            performanceAnalysis.innerHTML = `
+                <h4>Performance Analysis</h4>
+                ${results.map((result, index) => `
+                    <div class="performance-item">
+                        <span><strong>Q${index + 1}:</strong> ${result.isCorrect ? '✓ Correct' : '✗ Incorrect'}</span>
+                        <span>${result.isCorrect ? 'Well done!' : 'Review needed'}</span>
+                    </div>
+                `).join('')}
+                <div class="performance-item">
+                    <span><strong>Time Used:</strong></span>
+                    <span>${60 - timeLeft} seconds</span>
+                </div>
+                <div class="performance-item">
+                    <span><strong>Overall Performance:</strong></span>
+                    <span>${score >= 80 ? 'Excellent!' : score >= 60 ? 'Good' : 'Needs improvement'}</span>
+                </div>
+            `;
+        }
+
+        function retakeQuiz() {
+            document.getElementById('quiz-results').style.display = 'none';
+            document.getElementById('quiz-start').style.display = 'block';
+        }
+
+        // Event listeners for quiz
+        document.addEventListener('DOMContentLoaded', function() {
+            const startQuizBtn = document.getElementById('start-quiz-btn');
+            const nextQuestionBtn = document.getElementById('next-question-btn');
+            const retakeQuizBtn = document.getElementById('retake-quiz-btn');
+
+            if (startQuizBtn) {
+                startQuizBtn.addEventListener('click', startQuiz);
+            }
+            if (nextQuestionBtn) {
+                nextQuestionBtn.addEventListener('click', nextQuestion);
+            }
+            if (retakeQuizBtn) {
+                retakeQuizBtn.addEventListener('click', retakeQuiz);
+            }
+        });
+
+        // ================= Voice-based Assistant (STT + TTS) =================
+        function getSpeechRecognition() {
+            return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+        }
+
+        function initVoiceControls(){
+            const sttBtn = document.getElementById('ai-stt');
+            const ttsBtn = document.getElementById('ai-tts');
+            const input = document.getElementById('ai-input');
+            const messages = document.getElementById('ai-messages');
+            let lastBot = '';
+
+            const observer = new MutationObserver(()=>{
+                const nodes = Array.from(messages.querySelectorAll('.ai-msg.bot'));
+                if (nodes.length) lastBot = nodes[nodes.length-1].textContent || '';
+            });
+            observer.observe(messages, { childList:true });
+
+            sttBtn.addEventListener('click', ()=>{
+                const SR = getSpeechRecognition();
+                if(!SR){ showNotification('Speech recognition not supported in this browser.', 'error'); return; }
+                const rec = new SR();
+                rec.lang = 'en-US'; rec.interimResults = false; rec.maxAlternatives = 1;
+                rec.onresult = (e)=>{ input.value = e.results[0][0].transcript; };
+                rec.onerror = ()=> showNotification('STT error. Please try again.', 'error');
+                rec.start();
+            });
+
+            ttsBtn.addEventListener('click', ()=>{
+                if (!lastBot) { showNotification('No tutor reply to read yet.', 'info'); return; }
+                try { const u = new SpeechSynthesisUtterance(lastBot); speechSynthesis.speak(u); } catch {}
+            });
+        }
+
+        // ================= CSE Subject-wise YouTube Links =================
+        function initCseVideoLibrary(){
+            const resources = document.getElementById('student-resources');
+            if (!resources) return;
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-title">🎓 B.Tech CSE Video Library (2nd Year)</div>
+                <div class="form-row" style="margin:10px 0;">
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select id="cse-subject">
+                            <option value="dsa" selected>Data Structures</option>
+                            <option value="cn">Computer Networks</option>
+                            <option value="dbms">DBMS</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Topic</label>
+                        <select id="cse-topic"></select>
+                    </div>
+                </div>
+                <div id="cse-links" class="assignment-meta"></div>
+            `;
+            resources.appendChild(card);
+
+            const topics = {
+                dsa: {
+                    'Arrays & Complexity': ['https://www.youtube.com/results?search_query=arrays+time+complexity', 'https://www.youtube.com/results?search_query=array+data+structure+tutorial'],
+                    'Linked Lists': ['https://www.youtube.com/results?search_query=linked+list+in+c%2B%2B', 'https://www.youtube.com/results?search_query=linked+list+operations'],
+                    'Trees & BST': ['https://www.youtube.com/results?search_query=binary+search+tree+tutorial', 'https://www.youtube.com/results?search_query=tree+traversals']
+                },
+                cn: {
+                    'OSI Model': ['https://www.youtube.com/results?search_query=osi+model+layers+explained', 'https://www.youtube.com/results?search_query=osi+model+neso+academy'],
+                    'TCP/IP': ['https://www.youtube.com/results?search_query=tcp+ip+model+explained', 'https://www.youtube.com/results?search_query=tcp+vs+udp'],
+                    'Routing Basics': ['https://www.youtube.com/results?search_query=routing+algorithms+computer+networks', 'https://www.youtube.com/results?search_query=distance+vector+link+state']
+                },
+                dbms: {
+                    'Normalization': ['https://www.youtube.com/results?search_query=database+normalization+1nf+2nf+3nf', 'https://www.youtube.com/results?search_query=normalization+examples'],
+                    'SQL Joins': ['https://www.youtube.com/results?search_query=sql+joins+tutorial', 'https://www.youtube.com/results?search_query=left+join+right+join+full+join'],
+                    'Transactions & ACID': ['https://www.youtube.com/results?search_query=acid+properties+dbms', 'https://www.youtube.com/results?search_query=transaction+isolation+levels']
+                }
+            };
+
+            const subjectSel = card.querySelector('#cse-subject');
+            const topicSel = card.querySelector('#cse-topic');
+            const linksDiv = card.querySelector('#cse-links');
+
+            function refreshTopics(){
+                const subj = subjectSel.value;
+                topicSel.innerHTML = '';
+                Object.keys(topics[subj]).forEach(t => {
+                    const opt = document.createElement('option'); opt.value=t; opt.textContent=t; topicSel.appendChild(opt);
+                });
+                updateLinks();
+            }
+            function updateLinks(){
+                const subj = subjectSel.value; const t = topicSel.value;
+                const urls = topics[subj][t] || [];
+                linksDiv.innerHTML = urls.map(u=>`<div class="assignment-item"><a href="${u}" target="_blank" rel="noopener" class="btn-small btn-outline-small">Open: ${t}</a></div>`).join('') || '<div class="assignment-meta">No links found.</div>';
+            }
+            subjectSel.addEventListener('change', refreshTopics);
+            topicSel.addEventListener('change', updateLinks);
+            refreshTopics();
+        }
+    </script>
+</body>
+</html>
